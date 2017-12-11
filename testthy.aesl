@@ -1,0 +1,134 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="37938" name="thymio-II">var LOCKED = 1
+var MOVE = 0
+var PASSWD_1 = 0 
+var PASSWD_2 = 0
+var PASSWD_3 = 0
+var PASSWD_4 = 0
+var PASSWD_5 = 0
+var PASSWD_WRONG = 0
+
+
+sub locked 
+	LOCKED = 1
+	call leds.bottom.left(32, 0, 0)
+	call	 leds.bottom.right(32, 0, 0)
+	call leds.top(32, 0, 0)
+	
+sub unlocked 
+	LOCKED = 0
+	call leds.bottom.left(0, 32, 0)
+	call	 leds.bottom.right(0, 32, 0)
+	call leds.top(0, 32, 0)
+	 
+
+sub forward #play
+	motor.left.target = 200
+	motor.right.target = 200
+	MOVE = 1
+
+
+sub backward #record
+	motor.left.target = -200
+	motor.right.target = -200
+	
+sub still 
+	motor.left.target = 0
+	motor.right.target = 0
+	MOVE = 0
+
+#reset password
+	if  PASSWD_WRONG == 1 and LOCKED == 1 then
+		PASSWD_1 = 0
+		PASSWD_2 = 0
+		PASSWD_3 = 0
+		PASSWD_4 = 0
+		PASSWD_5 = 0
+		PASSWD_WRONG = 0
+		
+	end
+	
+	
+	
+
+#reset	
+onevent button.center 
+	callsub locked
+	motor.left.target = 0
+	motor.right.target = 0
+	
+
+onevent prox
+
+	if prox.horizontal[5] > 4000 and LOCKED == 0  then
+		callsub forward
+	elseif prox.horizontal[6] > 4000 and LOCKED == 0 and MOVE == 0 then
+		callsub backward
+		
+	end 
+	#nb1
+	if  PASSWD_WRONG == 0 and LOCKED == 0 and PASSWD_1 == 0 and PASSWD_2 == 0 and PASSWD_3 == 0 and PASSWD_4 == 0 and PASSWD_5 == 0 and prox.horizontal[0] > 4000 then
+		PASSWD_1 = 1
+	elseif PASSWD_1 == 0 and PASSWD_2 == 0 and PASSWD_3 == 0 and PASSWD_4 == 0 and PASSWD_5 == 0 and 		prox.horizontal[1] > 4000 and prox.horizontal[2] > 4000 and prox.horizontal[3] > 4000 and prox.horizontal[4] > 4000 then
+	PASSWD_WRONG = 1
+	#nb 2 
+ elseif PASSWD_WRONG == 0 and LOCKED == 0 and PASSWD_1 == 1 and PASSWD_2 == 0 and PASSWD_3 == 0 and PASSWD_4 == 0 and PASSWD_5 == 0
+ and prox.horizontal[1] >4000 
+ then PASSWD_2 = 1
+ elseif PASSWD_1 == 1 and PASSWD_2 == 0 and PASSWD_3 == 0 and PASSWD_4 == 0 and PASSWD_5 == 0 and prox.horizontal[0] >4000 and prox.horizontal[2] >4000 and prox.horizontal[3] >4000 and prox.horizontal[4] >4000 
+ then PASSWD_WRONG = 1
+
+#nb 3
+ elseif PASSWD_WRONG == 0 and LOCKED == 0 and PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 0 and PASSWD_4 == 0 and PASSWD_5 == 0
+ and prox.horizontal[2] >4000 
+ then PASSWD_3 = 1
+ elseif PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 0 and PASSWD_4 == 0 and PASSWD_5 == 0 and prox.horizontal[0] >4000 and prox.horizontal[1] >4000 and prox.horizontal[3] >4000 and prox.horizontal[4] >4000 
+ then PASSWD_WRONG = 1
+
+#nb4
+ elseif PASSWD_WRONG == 0 and LOCKED == 0 and PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 1 and PASSWD_4 == 0 and PASSWD_5 == 0
+ and prox.horizontal[3] >4000 
+ then PASSWD_4 = 1
+ elseif PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 1 and PASSWD_4 == 0 and PASSWD_5 == 0 and prox.horizontal[0] >4000 and prox.horizontal[1] >4000 and prox.horizontal[2] >4000 and prox.horizontal[4] >4000 
+ then PASSWD_WRONG = 1
+
+#nb5
+ elseif PASSWD_WRONG == 0 and LOCKED == 0 and PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 1 and PASSWD_4 == 1 and PASSWD_5 == 0
+ and prox.horizontal[4] >4000 
+ then PASSWD_5 = 1
+ elseif PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 1 and PASSWD_4 == 1 and PASSWD_5 == 0 and prox.horizontal[0] >4000 and prox.horizontal[1] >4000 and prox.horizontal[2] >4000 and prox.horizontal[3] >4000 
+ then PASSWD_WRONG = 1
+
+ elseif PASSWD_WRONG == 0 and LOCKED == 0 and PASSWD_1 == 1 and PASSWD_2 == 1 and PASSWD_3 == 1 and PASSWD_4 == 1 and PASSWD_5 == 1
+ then LOCKED = 0
+ 
+ end
+	
+ 
+onevent button.forward
+	 if  LOCKED == 0 and MOVE == 1  then
+	 callsub still 
+	 	
+	 end
+	 
+	 
+onevent button.backward
+	callsub unlocked
+</node>
+
+
+</network>
